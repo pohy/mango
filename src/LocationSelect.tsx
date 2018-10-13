@@ -35,33 +35,35 @@ const styles = (theme: Theme) =>
 export interface ILocationSelectProps extends WithStyles<typeof styles> {
     label: string;
     onLocation: (location: LatLngExpression) => void;
+    center?: LatLngExpression;
 }
 
-const initialState = {
-    center: [50.08804, 14.42076],
-};
+export interface ILocationSelectState {
+    center: LatLngExpression;
+    zoom: number;
+}
 
 class LocationSelectComponent extends React.Component<
     ILocationSelectProps,
-    typeof initialState
+    ILocationSelectState
 > {
-    state = { ...initialState };
+    state = { center: this.props.center || [50.08804, 14.42076], zoom: 10 };
 
-    viewportChangeHandler = ({ center }: any) => this.setState({ center });
+    viewportChangeHandler = ({ center, zoom }: any) => this.setState({ center, zoom });
 
     locationConfirmHandler = () =>
         this.props.onLocation(this.state.center as LatLngExpression);
 
     render() {
         const { label, classes } = this.props;
-        const { center } = this.state;
+        const { center, zoom } = this.state;
         return (
             <>
                 <Grid item xs={12}>
                     <Paper>
                         <TextField
                             fullWidth
-                            value={center.join(', ')}
+                            value={center.toString()}
                             {...{ label }}
                             variant="outlined"
                         />
@@ -69,11 +71,13 @@ class LocationSelectComponent extends React.Component<
                 </Grid>
                 <Grid item xs={12}>
                     <Map
+                        scrollWheelZoom
+                        touchZoom
                         className={classes.map}
-                        zoom={11}
                         zoomControl={false}
                         onViewportChange={this.viewportChangeHandler}
                         center={center as LatLngTuple}
+                        {...{zoom}}
                     >
                         <TileLayer
                             url="http://{s}.tile.openstreetmap.com/{z}/{x}/{y}.png"
