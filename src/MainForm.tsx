@@ -10,16 +10,24 @@ import {
     withStyles,
     Button,
 } from '@material-ui/core';
+import { LocationSelect } from './LocationSelect';
+import { LatLngTuple } from 'leaflet';
 
 enum Roles {
     Rider = 'rider',
     Driver = 'driver',
 }
 
+enum SelectingLocation {
+    Origin = 'origin',
+    Destination = 'destination',
+}
+
 const initialState = {
     origin: '',
     destination: '',
     role: Roles.Rider,
+    selectingLocation: null,
 };
 
 const styles = createStyles({
@@ -29,9 +37,16 @@ const styles = createStyles({
     },
 });
 
+export interface IMainFormState {
+    origin: string;
+    destination: string;
+    role: Roles;
+    selectingLocation: null | SelectingLocation;
+}
+
 class MainFormComponent extends React.Component<
     WithStyles<typeof styles>,
-    typeof initialState
+    IMainFormState
 > {
     state = { ...initialState };
 
@@ -40,9 +55,28 @@ class MainFormComponent extends React.Component<
     }: React.ChangeEvent<HTMLInputElement>) =>
         (this.setState as any)({ [fieldName]: value });
 
+    selectLocation = (selectingLocation: SelectingLocation) => () =>
+        this.setState({ selectingLocation });
+
+    locationHandler = (selectingLocation: SelectingLocation) => (
+        location: LatLngTuple,
+    ) =>
+        (this.setState as any)({
+            [selectingLocation]: location,
+            selectingLocation: null,
+        });
+
     render() {
-        const { origin, destination, role } = this.state;
+        const { origin, destination, role, selectingLocation } = this.state;
         const { classes } = this.props;
+        if (selectingLocation) {
+            return (
+                <LocationSelect
+                    label={selectingLocation}
+                    onLocation={this.locationHandler(selectingLocation)}
+                />
+            );
+        }
         return (
             <>
                 <Grid item xs={12}>
@@ -50,7 +84,7 @@ class MainFormComponent extends React.Component<
                         fullWidth
                         label="Origin"
                         value={origin}
-                        onChange={this.handleChange('origin')}
+                        onFocus={this.selectLocation(SelectingLocation.Origin)}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -58,7 +92,9 @@ class MainFormComponent extends React.Component<
                         fullWidth
                         label="Destination"
                         value={destination}
-                        onChange={this.handleChange('destination')}
+                        onFocus={this.selectLocation(
+                            SelectingLocation.Destination,
+                        )}
                     />
                 </Grid>
                 <Grid item xs={12}>
