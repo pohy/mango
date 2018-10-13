@@ -10,7 +10,9 @@ import {
     WithStyles,
     withStyles,
 } from '@material-ui/core';
-import { MainForm } from './MainForm';
+import { MainForm, IFormData } from './MainForm';
+import { NavigationPage } from './NavigationPage';
+import { LatLngExpression } from 'leaflet';
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -19,9 +21,33 @@ const styles = (theme: Theme) =>
         },
     });
 
-class AppComponent extends React.Component<WithStyles<typeof styles>, {}> {
+export interface IAppState {
+    waypoints: {
+        origin: LatLngExpression | null;
+        destination: LatLngExpression | null;
+    };
+}
+
+class AppComponent extends React.Component<
+    WithStyles<typeof styles>,
+    IAppState
+> {
+    state = {
+        waypoints: {
+            origin: null,
+            destination: null,
+        },
+    };
+
+    formSubmitHandler = ({ origin, destination }: IFormData) =>
+        this.setState({ waypoints: { origin, destination } });
+
     public render() {
         const { classes } = this.props;
+        const {
+            waypoints,
+            waypoints: { origin, destination },
+        } = this.state;
         return (
             <>
                 <CssBaseline />
@@ -34,7 +60,9 @@ class AppComponent extends React.Component<WithStyles<typeof styles>, {}> {
                 </AppBar>
                 <main className={classes.main}>
                     <Grid container spacing={8}>
-                        <MainForm />
+                        {!origin || !destination ? (
+                            <MainForm onSubmit={this.formSubmitHandler} />
+                        ) : <NavigationPage {...{waypoints}} />}
                     </Grid>
                 </main>
             </>

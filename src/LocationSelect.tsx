@@ -49,7 +49,8 @@ class LocationSelectComponent extends React.Component<
 > {
     state = { center: this.props.center || [50.08804, 14.42076], zoom: 10 };
 
-    viewportChangeHandler = ({ center, zoom }: any) => this.setState({ center, zoom });
+    viewportChangeHandler = ({ center, zoom }: any) =>
+        this.setState({ center, zoom });
 
     locationConfirmHandler = () =>
         this.props.onLocation(this.state.center as LatLngExpression);
@@ -77,7 +78,7 @@ class LocationSelectComponent extends React.Component<
                         zoomControl={false}
                         onViewportChange={this.viewportChangeHandler}
                         center={center as LatLngTuple}
-                        {...{zoom}}
+                        {...{ zoom }}
                     >
                         <TileLayer
                             url="http://{s}.tile.openstreetmap.com/{z}/{x}/{y}.png"

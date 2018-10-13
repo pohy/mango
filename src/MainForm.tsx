@@ -11,7 +11,7 @@ import {
     Button,
 } from '@material-ui/core';
 import { LocationSelect } from './LocationSelect';
-import { LatLngTuple } from 'leaflet';
+import { LatLngTuple, LatLngExpression } from 'leaflet';
 
 enum Roles {
     Rider = 'rider',
@@ -24,8 +24,8 @@ enum SelectingLocation {
 }
 
 const initialState = {
-    origin: '',
-    destination: '',
+    origin: [50.11793646935712,14.367370605468752] as LatLngTuple,
+    destination: [50.08804,14.42076] as LatLngTuple,
     role: Roles.Rider,
     selectingLocation: null,
 };
@@ -37,20 +37,27 @@ const styles = createStyles({
     },
 });
 
-export interface IMainFormState {
-    origin: string;
-    destination: string;
+export interface IFormData {
+    origin: LatLngExpression | null;
+    destination: LatLngExpression | null;
     role: Roles;
+}
+
+export interface IMainFormProps extends WithStyles<typeof styles> {
+    onSubmit?: (formData: IFormData) => void;
+}
+
+export interface IMainFormState extends IFormData {
     selectingLocation: null | SelectingLocation;
 }
 
 class MainFormComponent extends React.Component<
-    WithStyles<typeof styles>,
+    IMainFormProps,
     IMainFormState
 > {
     state = { ...initialState };
 
-    handleChange = (fieldName: keyof typeof initialState) => ({
+    handleChange = (fieldName: keyof IFormData) => ({
         target: { value },
     }: React.ChangeEvent<HTMLInputElement>) =>
         (this.setState as any)({ [fieldName]: value });
@@ -66,6 +73,9 @@ class MainFormComponent extends React.Component<
             selectingLocation: null,
         });
 
+    submitHandler = () =>
+        this.props.onSubmit && this.props.onSubmit(this.state);
+
     render() {
         const { origin, destination, role, selectingLocation } = this.state;
         const { classes } = this.props;
@@ -74,6 +84,7 @@ class MainFormComponent extends React.Component<
                 <LocationSelect
                     label={selectingLocation}
                     onLocation={this.locationHandler(selectingLocation)}
+                    center={this.state[selectingLocation]}
                 />
             );
         }
@@ -83,7 +94,7 @@ class MainFormComponent extends React.Component<
                     <TextField
                         fullWidth
                         label="Origin"
-                        value={origin}
+                        value={origin || ''}
                         onFocus={this.selectLocation(SelectingLocation.Origin)}
                     />
                 </Grid>
@@ -91,7 +102,7 @@ class MainFormComponent extends React.Component<
                     <TextField
                         fullWidth
                         label="Destination"
-                        value={destination}
+                        value={destination || ''}
                         onFocus={this.selectLocation(
                             SelectingLocation.Destination,
                         )}
@@ -116,7 +127,12 @@ class MainFormComponent extends React.Component<
                     </RadioGroup>
                 </Grid>
                 <Grid item xs={12}>
-                    <Button fullWidth color="primary" variant="contained">
+                    <Button
+                        fullWidth
+                        color="primary"
+                        variant="contained"
+                        onClick={this.submitHandler}
+                    >
                         Let's go
                     </Button>
                 </Grid>
