@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { MainForm, IFormData } from './MainForm';
 import { NavigationPage } from './NavigationPage';
-import { LatLngExpression } from 'leaflet';
+import { LatLngTuple } from 'leaflet';
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -21,11 +21,13 @@ const styles = (theme: Theme) =>
         },
     });
 
+export type Waypoints = {
+    origin: LatLngTuple;
+    destination: LatLngTuple;
+};
+
 export interface IAppState {
-    waypoints: {
-        origin: LatLngExpression | null;
-        destination: LatLngExpression | null;
-    };
+    waypoints: Waypoints | null;
 }
 
 class AppComponent extends React.Component<
@@ -33,10 +35,15 @@ class AppComponent extends React.Component<
     IAppState
 > {
     state = {
-        waypoints: {
-            origin: null,
-            destination: null,
-        },
+        waypoints: null,
+        // waypoints: {
+        //     origin: null,
+        //     destination: null,
+            // origin: [50.11793646935712, 14.367370605468752] as LatLngTuple,
+            // destination: [50.08804, 14.42076] as LatLngTuple,
+            // origin: [8.34234, 48.23424] as LatLngTuple,
+            // destination: [8.34423, 48.26424] as LatLngTuple,
+        // },
     };
 
     formSubmitHandler = ({ origin, destination }: IFormData) =>
@@ -46,7 +53,7 @@ class AppComponent extends React.Component<
         const { classes } = this.props;
         const {
             waypoints,
-            waypoints: { origin, destination },
+            // waypoints: { origin, destination },
         } = this.state;
         return (
             <>
@@ -60,9 +67,11 @@ class AppComponent extends React.Component<
                 </AppBar>
                 <main className={classes.main}>
                     <Grid container spacing={8}>
-                        {!origin || !destination ? (
+                        {waypoints ? (
+                            <NavigationPage {...{ waypoints }} />
+                        ) : (
                             <MainForm onSubmit={this.formSubmitHandler} />
-                        ) : <NavigationPage {...{waypoints}} />}
+                        )}
                     </Grid>
                 </main>
             </>

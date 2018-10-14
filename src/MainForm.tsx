@@ -11,7 +11,7 @@ import {
     Button,
 } from '@material-ui/core';
 import { LocationSelect } from './LocationSelect';
-import { LatLngTuple, LatLngExpression } from 'leaflet';
+import { LatLngTuple } from 'leaflet';
 
 enum Roles {
     Rider = 'rider',
@@ -24,9 +24,16 @@ enum SelectingLocation {
 }
 
 const initialState = {
-    origin: [50.11793646935712,14.367370605468752] as LatLngTuple,
-    destination: [50.08804,14.42076] as LatLngTuple,
-    role: Roles.Rider,
+    formData: {
+        origin: undefined,
+        destination: undefined,
+        role: Roles.Rider,
+    },
+    // formData: {
+    //     origin: [50.11793646935712, 14.367370605468752] as LatLngTuple,
+    //     destination: [50.08804, 14.42076] as LatLngTuple,
+    // },
+    // formData: null,
     selectingLocation: null,
 };
 
@@ -38,8 +45,8 @@ const styles = createStyles({
 });
 
 export interface IFormData {
-    origin: LatLngExpression | null;
-    destination: LatLngExpression | null;
+    origin: LatLngTuple;
+    destination: LatLngTuple;
     role: Roles;
 }
 
@@ -47,8 +54,9 @@ export interface IMainFormProps extends WithStyles<typeof styles> {
     onSubmit?: (formData: IFormData) => void;
 }
 
-export interface IMainFormState extends IFormData {
+export interface IMainFormState {
     selectingLocation: null | SelectingLocation;
+    formData: Partial<IFormData>;
 }
 
 class MainFormComponent extends React.Component<
@@ -60,7 +68,7 @@ class MainFormComponent extends React.Component<
     handleChange = (fieldName: keyof IFormData) => ({
         target: { value },
     }: React.ChangeEvent<HTMLInputElement>) =>
-        (this.setState as any)({ [fieldName]: value });
+        (this.setState as any)({ formData: {...this.state.formData, [fieldName]: value }});
 
     selectLocation = (selectingLocation: SelectingLocation) => () =>
         this.setState({ selectingLocation });
@@ -69,16 +77,19 @@ class MainFormComponent extends React.Component<
         location: LatLngTuple,
     ) =>
         (this.setState as any)({
-            [selectingLocation]: location,
+            formData: {...this.state.formData, [selectingLocation]: location},
             selectingLocation: null,
         });
 
     submitHandler = () =>
-        this.props.onSubmit && this.props.onSubmit(this.state);
+        this.props.onSubmit &&
+        this.state.formData &&
+        this.props.onSubmit(this.state.formData as any);
 
     render() {
-        const { origin, destination, role, selectingLocation } = this.state;
+        const { formData, selectingLocation } = this.state;
         const { classes } = this.props;
+        const { origin, destination, role } = formData;
         if (selectingLocation) {
             return (
                 <LocationSelect

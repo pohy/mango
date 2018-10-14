@@ -10,10 +10,9 @@ import {
     Button,
 } from '@material-ui/core';
 import DoneIcon from '@material-ui/icons/Done';
-import { Map, TileLayer } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import { MapMarker } from './MapMarker';
 import { LatLngTuple, LatLngExpression } from 'leaflet';
+import { DefaultMap } from './DefaultMap';
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -71,21 +70,13 @@ class LocationSelectComponent extends React.Component<
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
-                    <Map
-                        scrollWheelZoom
-                        touchZoom
-                        className={classes.map}
-                        zoomControl={false}
+                    <DefaultMap
                         onViewportChange={this.viewportChangeHandler}
                         center={center as LatLngTuple}
                         {...{ zoom }}
                     >
-                        <TileLayer
-                            url="http://{s}.tile.openstreetmap.com/{z}/{x}/{y}.png"
-                            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                        />
                         <MapMarker />
-                    </Map>
+                    </DefaultMap>
                 </Grid>
                 <Button
                     variant="fab"
