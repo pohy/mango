@@ -25,9 +25,9 @@ enum SelectingLocation {
 
 const initialState = {
     formData: {
-        origin: undefined,
-        destination: undefined,
-        role: Roles.Rider,
+        origin: [50.16807843732947, 14.372531175613405] as LatLngTuple,
+        destination: [50.08804, 14.42076] as LatLngTuple,
+        role: Roles.Driver,
     },
     // formData: {
     //     origin: [50.11793646935712, 14.367370605468752] as LatLngTuple,
