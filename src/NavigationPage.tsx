@@ -153,7 +153,7 @@ async function fetchRoute(points: LatLngTuple[]) {
 
 export function routeURL(points: LatLngTuple[]) {
     const coordinates = points.map(([lat, lng]) => `${lng},${lat}`).join('|');
-    return `https://api.openrouteservice.org/directions?api_key=${API_KEY}&coordinates=${coordinates}&profile=driving-car&geometry_format=polyline`;
+    return `//api.openrouteservice.org/directions?api_key=${API_KEY}&coordinates=${coordinates}&profile=driving-car&geometry_format=polyline`;
 }
 
 export const NavigationPage = withStyles(styles)(NavigationPageComponent);

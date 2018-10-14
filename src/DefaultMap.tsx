@@ -41,7 +41,7 @@ const DefaultMapComponent: React.SFC<IDefaultMapProps> = ({
         {...{ onViewportChange }}
     >
         <TileLayer
-            url="http://{s}.tile.openstreetmap.com/{z}/{x}/{y}.png"
+            url="//{s}.tile.openstreetmap.com/{z}/{x}/{y}.png"
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
         />
         {children}
