@@ -5,15 +5,15 @@ const styles = createStyles({
     marker: {
         position: 'absolute',
         background:
-            'url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat',
+            'url(//cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-icon.png) no-repeat',
         top: '50%',
         left: '50%',
         // transform: 'translate(-50%, -50%)',
         zIndex: 400,
-        marginLeft: -10,
-        marginTop: -34,
-        height: 34,
-        width: 20,
+        marginLeft: -12,
+        marginTop: -41,
+        width: 25,
+        height: 41,
     },
 });
 

@@ -111,7 +111,7 @@ class NavigationPageComponent extends React.Component<
                         )}
                     </DefaultMap>
                 </Grid>
-                <Button
+                {!compoundRoute.length && <Button
                     variant="fab"
                     color="primary"
                     className={classes.fab}
@@ -119,6 +119,7 @@ class NavigationPageComponent extends React.Component<
                 >
                     <DoneIcon />
                 </Button>
+                }
             </>
         );
     }
