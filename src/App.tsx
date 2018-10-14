@@ -39,10 +39,10 @@ class AppComponent extends React.Component<
         // waypoints: {
         //     origin: null,
         //     destination: null,
-            // origin: [50.11793646935712, 14.367370605468752] as LatLngTuple,
-            // destination: [50.08804, 14.42076] as LatLngTuple,
-            // origin: [8.34234, 48.23424] as LatLngTuple,
-            // destination: [8.34423, 48.26424] as LatLngTuple,
+        // origin: [50.11793646935712, 14.367370605468752] as LatLngTuple,
+        // destination: [50.08804, 14.42076] as LatLngTuple,
+        // origin: [8.34234, 48.23424] as LatLngTuple,
+        // destination: [8.34423, 48.26424] as LatLngTuple,
         // },
     };
 

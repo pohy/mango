@@ -68,7 +68,9 @@ class MainFormComponent extends React.Component<
     handleChange = (fieldName: keyof IFormData) => ({
         target: { value },
     }: React.ChangeEvent<HTMLInputElement>) =>
-        (this.setState as any)({ formData: {...this.state.formData, [fieldName]: value }});
+        (this.setState as any)({
+            formData: { ...this.state.formData, [fieldName]: value },
+        });
 
     selectLocation = (selectingLocation: SelectingLocation) => () =>
         this.setState({ selectingLocation });
@@ -77,7 +79,7 @@ class MainFormComponent extends React.Component<
         location: LatLngTuple,
     ) =>
         (this.setState as any)({
-            formData: {...this.state.formData, [selectingLocation]: location},
+            formData: { ...this.state.formData, [selectingLocation]: location },
             selectingLocation: null,
         });
 

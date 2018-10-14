@@ -31,7 +31,9 @@ export class NavigationPage extends React.Component<
             .then((res) => res.json());
         const [route] = result.routes;
         const { geometry } = route;
-        const routePoints = geometry.map((point: LatLngTuple) => point.reverse())
+        const routePoints = geometry.map((point: LatLngTuple) =>
+            point.reverse(),
+        );
         this.setState({ routePoints });
     }
 
