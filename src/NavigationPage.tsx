@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { LatLngTuple } from 'leaflet';
-import { Grid } from '@material-ui/core';
+import {
+    Grid,
+    Theme,
+    createStyles,
+    WithStyles,
+    withStyles,
+    Button,
+} from '@material-ui/core';
+import DoneIcon from '@material-ui/icons/Done';
 import { DefaultMap } from './DefaultMap';
 import { Waypoints } from './App';
 import { Polyline } from 'react-leaflet';
@@ -8,22 +16,33 @@ import { RouteMarkers } from './RouteMarkers';
 
 const API_KEY = '5b3ce3597851110001cf6248d18141a0047849b5a28ae11e5e140f50';
 
-export interface INavigationPageProps {
+const styles = (theme: Theme) =>
+    createStyles({
+        fab: {
+            position: 'absolute',
+            bottom: theme.spacing.unit * 2,
+            right: theme.spacing.unit * 2,
+        },
+    });
+
+export interface INavigationPageProps extends WithStyles<typeof styles> {
     waypoints: Waypoints;
 }
 
 export interface INavigationPageState {
     routePoints: LatLngTuple[];
     peerRoute: LatLngTuple[];
+    compoundRoute: LatLngTuple[];
 }
 
-export class NavigationPage extends React.Component<
+class NavigationPageComponent extends React.Component<
     INavigationPageProps,
     INavigationPageState
 > {
     state = {
         routePoints: [],
         peerRoute: [],
+        compoundRoute: [],
     };
 
     async componentDidMount() {
@@ -37,15 +56,26 @@ export class NavigationPage extends React.Component<
         this.setState({ routePoints, peerRoute });
     }
 
-    render() {
+    mergeRoutes = async () => {
+        const { peerRoute } = this.state;
         const {
             waypoints: { origin, destination },
         } = this.props;
-        const { routePoints, peerRoute } = this.state;
-        // const peerRoute = routePoints.slice(
-        //     ,
-        //     Math.floor(routePoints.length * 0.8)
-        // );
+        const compoundRoute = await fetchRoute([
+            origin,
+            peerRoute[0],
+            peerRoute[peerRoute.length - 1],
+            destination,
+        ]);
+        this.setState({ compoundRoute });
+    };
+
+    render() {
+        const {
+            waypoints: { origin, destination },
+            classes,
+        } = this.props;
+        const { routePoints, peerRoute, compoundRoute } = this.state;
         return (
             <>
                 <Grid item xs={12}>
@@ -53,8 +83,23 @@ export class NavigationPage extends React.Component<
                         <RouteMarkers {...{ origin, destination }} />
                         {routePoints.length && (
                             <>
-                                <Polyline positions={routePoints} />
-                                <Polyline positions={peerRoute} color="red" />
+                                {compoundRoute.length ? (
+                                    <>
+                                        <Polyline positions={compoundRoute} />
+                                        <Polyline
+                                            positions={peerRoute}
+                                            color="purple"
+                                        />
+                                    </>
+                                ) : (
+                                    <>
+                                        <Polyline positions={routePoints} />
+                                        <Polyline
+                                            positions={peerRoute}
+                                            color="red"
+                                        />
+                                    </>
+                                )}
                                 <RouteMarkers
                                     color="red"
                                     origin={peerRoute[0]}
@@ -66,6 +111,14 @@ export class NavigationPage extends React.Component<
                         )}
                     </DefaultMap>
                 </Grid>
+                <Button
+                    variant="fab"
+                    color="primary"
+                    className={classes.fab}
+                    onClick={this.mergeRoutes}
+                >
+                    <DoneIcon />
+                </Button>
             </>
         );
     }
@@ -98,15 +151,9 @@ async function fetchRoute(points: LatLngTuple[]) {
     ) as LatLngTuple[];
 }
 
-export function routeURL(
-    // [originLat, originLng]: LatLngTuple,
-    // [destinationLat, destinationLng]: LatLngTuple,
-    points: LatLngTuple[],
-) {
+export function routeURL(points: LatLngTuple[]) {
     const coordinates = points.map(([lat, lng]) => `${lng},${lat}`).join('|');
     return `https://api.openrouteservice.org/directions?api_key=${API_KEY}&coordinates=${coordinates}&profile=driving-car&geometry_format=polyline`;
 }
 
-// function formatCoord(coord: number) {
-//     return coord.toString().substring(0, 7);
-// }
+export const NavigationPage = withStyles(styles)(NavigationPageComponent);
